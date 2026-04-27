@@ -1,0 +1,83 @@
+# ─── Python / Django ──────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.manifest
+*.spec
+
+# Virtual environments
+backend/env/
+backend/.venv/
+env/
+.venv/
+venv/
+
+# Django
+backend/db.sqlite3
+backend/*.sqlite3
+backend/media/
+backend/staticfiles/
+backend/static/
+*.log
+
+# Migrations (keep __init__.py but ignore migration files if needed — optional)
+# Uncomment the lines below if you DON'T want to track migrations:
+# backend/**/migrations/0*.py
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+
+# ─── Node / React / Vite ──────────────────────────────────────────────────────
+frond_end/node_modules/
+frond_end/dist/
+frond_end/.vite/
+frond_end/coverage/
+
+# Vite build output
+frond_end/dist-ssr/
+*.local
+
+# ─── IDE / Editor ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+.DS_Store
+Thumbs.db
+
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ─── Test / Coverage ──────────────────────────────────────────────────────────
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ─── Misc ─────────────────────────────────────────────────────────────────────
+*.bak
+*.tmp
+*.orig
