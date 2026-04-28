@@ -8,6 +8,8 @@ from .views import (
     AdminRegisterView,
     ProfileView,
     UserListView,
+    AdminUserDetailView,
+    AdminAnalyticsView,
     test_users,
 )
 
@@ -25,6 +27,8 @@ urlpatterns = [
     # ── Protected Routes ───────────────────────────────────
     path('profile/',           ProfileView.as_view(),       name='user-profile'),
     path('admin/users/',       UserListView.as_view(),      name='user-list'),
+    path('admin/users/<int:pk>/', AdminUserDetailView.as_view(), name='admin-user-detail'),
+    path('admin/analytics/',   AdminAnalyticsView.as_view(), name='admin-analytics'),
 
     # ── JWT Token Refresh ──────────────────────────────────
     path('token/refresh/',     TokenRefreshView.as_view(),  name='token-refresh'),

@@ -10,22 +10,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env file
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-jwx^6_-yhqqom4^f#ev_2^&q(b$#2+al_j$&8tabd9(d75cuf7'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-jwx^6_-yhqqom4^f#ev_2^&q(b$#2+al_j$&8tabd9(d75cuf7')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -45,6 +50,8 @@ INSTALLED_APPS = [
     'users',
     'scores',
     'subscriptions',
+    'charities',
+    'draws',
 ]
 
 MIDDLEWARE = [
@@ -126,6 +133,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# ─── Media files (charity images, event photos) ───────────────────────────────
+import os
+MEDIA_URL  = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # ─── Custom User Model ────────────────────────────────────────────────────────
 AUTH_USER_MODEL = 'users.User'
 
@@ -157,8 +169,8 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # ─── Razorpay ─────────────────────────────────────────────────────────────────
-RAZORPAY_KEY_ID     = 'rzp_test_SidREWJvtAb2eE'      # ← replace with your key
-RAZORPAY_KEY_SECRET = 'GfJRMnLIx44LMYAMR5IDhuJl'            # ← replace with your secret
+RAZORPAY_KEY_ID     = os.getenv('RAZORPAY_KEY_ID', 'rzp_test_SidREWJvtAb2eE')
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', 'GfJRMnLIx44LMYAMR5IDhuJl')
 
 # ─── Subscription Plans ───────────────────────────────────────────────────────
 SUBSCRIPTION_PLANS = {

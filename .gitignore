@@ -37,6 +37,8 @@ backend/static/
 !.env.example
 backend/.env
 backend/.env.*
+frond_end/.env
+frond_end/.env.*
 
 # ─── Node / React / Vite ──────────────────────────────────────────────────────
 frond_end/node_modules/

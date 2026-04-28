@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 
@@ -139,3 +140,51 @@ class UserListView(APIView):
     def get(self, request):
         users = User.objects.all().order_by('-created_at')
         return Response(UserSerializer(users, many=True).data)
+
+class AdminUserDetailView(APIView):
+    """GET/PATCH /api/users/admin/users/<id>/ — Manage user profile (admin only)."""
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        return Response(UserSerializer(user).data)
+        
+    def patch(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminAnalyticsView(APIView):
+    """GET /api/users/admin/analytics/  — Get system-wide stats."""
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        from django.db.models import Sum
+        from draws.models import MonthlyDraw
+        from charities.models import UserCharity
+        
+        # Total Users
+        total_users = User.objects.filter(role='user').count()
+        
+        # Total Prize Pool (Sum of pool_total across all draws)
+        total_prize_pool = MonthlyDraw.objects.aggregate(total=Sum('pool_total'))['total'] or 0
+        
+        # Draw stats
+        total_draws = MonthlyDraw.objects.count()
+        published_draws = MonthlyDraw.objects.filter(status='published').count()
+        
+        # Charity contributions (Assume $5 equivalent per percentage point for proxy stats)
+        # Or just total users supporting a charity
+        charity_supporters = UserCharity.objects.count()
+
+        return Response({
+            'total_users': total_users,
+            'total_prize_pool': total_prize_pool,
+            'total_draws': total_draws,
+            'published_draws': published_draws,
+            'charity_supporters': charity_supporters,
+        })

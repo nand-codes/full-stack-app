@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ChangeEvent } from 'react';
-import { loginUser } from '../api/auth';
+import { loginUser, loginAdmin } from '../api/auth';
 import './Login.css';
 
 interface FormData {
@@ -18,6 +18,7 @@ export default function Login() {
   const [errors, setErrors] = useState<FieldError>({});
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -38,12 +39,12 @@ export default function Login() {
     if (!validate()) return;
     setLoading(true);
     try {
-      const { data } = await loginUser(form);
+      const { data } = isAdmin ? await loginAdmin(form) : await loginUser(form);
       localStorage.setItem('access_token', data.tokens.access);
       localStorage.setItem('refresh_token', data.tokens.refresh);
       localStorage.setItem('user', JSON.stringify(data.user));
-      // Redirect to dashboard (update this path as needed)
-      window.location.href = '/dashboard';
+      // Redirect to admin dashboard if admin, else normal dashboard
+      window.location.href = data.user.role === 'admin' ? '/admin' : '/dashboard';
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: Record<string, string[]> } };
       const serverErrors = axiosErr?.response?.data ?? {};
@@ -95,10 +96,28 @@ export default function Login() {
         <div className="login-card">
           <div className="card-header">
             <div className="avatar-ring">
-              <span className="avatar-icon">👤</span>
+              <span className="avatar-icon">{isAdmin ? '⚙️' : '👤'}</span>
             </div>
-            <h2 className="card-title">Sign In</h2>
+            <h2 className="card-title">{isAdmin ? 'Admin Portal' : 'Sign In'}</h2>
             <p className="card-subtitle">Enter your credentials to continue</p>
+          </div>
+
+          {/* Toggle Role */}
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', background: 'var(--bg-secondary)', padding: '0.3rem', borderRadius: '8px' }}>
+            <button 
+              type="button" 
+              onClick={() => setIsAdmin(false)} 
+              style={{ flex: 1, padding: '0.5rem', borderRadius: '6px', border: 'none', background: !isAdmin ? 'var(--primary-color)' : 'transparent', color: !isAdmin ? '#000' : 'var(--text-secondary)', fontWeight: 600, cursor: 'pointer' }}
+            >
+              User Login
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setIsAdmin(true)} 
+              style={{ flex: 1, padding: '0.5rem', borderRadius: '6px', border: 'none', background: isAdmin ? 'var(--primary-color)' : 'transparent', color: isAdmin ? '#000' : 'var(--text-secondary)', fontWeight: 600, cursor: 'pointer' }}
+            >
+              Admin Login
+            </button>
           </div>
 
           {errors.general && (
