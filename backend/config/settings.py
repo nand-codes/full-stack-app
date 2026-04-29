@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
+from datetime import timedelta
+
+import dj_database_url
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -57,6 +60,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # ← must be first
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # ← WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,16 +89,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        # Use DATABASE_URL if available, otherwise use local SQLite
+        default=os.getenv('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        conn_max_age=600
+    )
 }
-
 
 
 # Password validation
@@ -132,9 +134,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ─── Media files (charity images, event photos) ───────────────────────────────
-import os
 MEDIA_URL  = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -152,7 +155,6 @@ REST_FRAMEWORK = {
 }
 
 # ─── Simple JWT ───────────────────────────────────────────────────────────────
-from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME':  timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
@@ -161,11 +163,18 @@ SIMPLE_JWT = {
 }
 
 # ─── CORS ─────────────────────────────────────────────────────────────────────
+# In production, set CORS_ORIGINS env var to your Vercel URL, e.g.
+# CORS_ORIGINS=https://your-app.vercel.app
+_extra_origins = [
+    o.strip()
+    for o in os.getenv('CORS_ORIGINS', '').split(',')
+    if o.strip()
+]
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
-    'http://localhost:5174',  # Vite (alternate port)
+    'http://localhost:5174',
     'http://localhost:3000',
-]
+] + _extra_origins
 CORS_ALLOW_CREDENTIALS = True
 
 # ─── Razorpay ─────────────────────────────────────────────────────────────────
