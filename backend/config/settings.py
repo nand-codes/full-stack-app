@@ -35,6 +35,11 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.up.railway.app').split(',')
 
+# Railway auto-injects RAILWAY_PUBLIC_DOMAIN — always allow it
+_railway_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN', '')
+if _railway_domain and _railway_domain not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(_railway_domain)
+
 
 # Application definition
 
@@ -90,13 +95,21 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 
-DATABASES = {
-    'default': dj_database_url.config(
-        # Use DATABASE_URL if available, otherwise use local SQLite
-        default=os.getenv('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
-        conn_max_age=600
-    )
-}
+# ─── Database ─────────────────────────────────────────────────────────────────
+# Railway sets DATABASE_URL (or DATABASE_PRIVATE_URL for internal networking)
+_db_url = os.getenv('DATABASE_URL') or os.getenv('DATABASE_PRIVATE_URL')
+
+if _db_url:
+    DATABASES = {
+        'default': dj_database_url.parse(_db_url, conn_max_age=600)
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
