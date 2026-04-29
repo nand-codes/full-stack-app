@@ -6,6 +6,7 @@ const API = axios.create({
 });
 
 // Attach JWT token to requests, but skip public auth endpoints
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PUBLIC_ENDPOINTS = [
   '/users/register/', '/users/login/', '/users/admin/login/',
   '/charities/', '/draws/latest/', '/charities/admin/' // admin login/registration are also here but let's be specific
@@ -125,6 +126,7 @@ export interface Charity {
   image: string | null;
   website_url: string;
   is_featured: boolean;
+  is_active: boolean;
   events: CharityEvent[];
 }
 
@@ -154,6 +156,7 @@ export interface DrawResult {
   verification_status: 'none' | 'pending' | 'submitted' | 'approved' | 'rejected';
   payment_status: 'none' | 'pending' | 'paid';
   admin_notes: string;
+  proof_image: string | null;
 }
 
 export interface MonthlyDraw {
@@ -165,6 +168,7 @@ export interface MonthlyDraw {
   drawn_numbers: number[];
   status: 'pending' | 'simulated' | 'published';
   jackpot_amount: string;
+  effective_jackpot: string;
   jackpot_rolled_over: boolean;
   entry_count: number;
   winner_count: number;
