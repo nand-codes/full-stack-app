@@ -33,7 +33,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-jwx^6_-yhqqom4^f#ev_2^&q(b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.up.railway.app').split(',')
 
 
 # Application definition
@@ -165,6 +165,7 @@ SIMPLE_JWT = {
 # ─── CORS ─────────────────────────────────────────────────────────────────────
 # In production, set CORS_ORIGINS env var to your Vercel URL, e.g.
 # CORS_ORIGINS=https://your-app.vercel.app
+# Railway auto-sets PORT and DATABASE_URL when you add a Postgres plugin
 _extra_origins = [
     o.strip()
     for o in os.getenv('CORS_ORIGINS', '').split(',')
