@@ -1,0 +1,8 @@
+[build]
+builder = "railpack"
+buildCommand = "cd backend && pip install -r requirements.txt && python manage.py collectstatic --no-input"
+
+[deploy]
+startCommand = "cd backend && python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
