@@ -6,12 +6,6 @@ const API = axios.create({
 });
 
 // Attach JWT token to requests, but skip public auth endpoints
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PUBLIC_ENDPOINTS = [
-  '/users/register/', '/users/login/', '/users/admin/login/',
-  '/charities/', '/draws/latest/', '/charities/admin/' // admin login/registration are also here but let's be specific
-];
-
 API.interceptors.request.use((config) => {
   // Public GET endpoints (e.g. public list of charities) or specific auth endpoints
   const isPublicAuth = ['/users/register/', '/users/login/', '/users/admin/login/'].some(ep => config.url === ep);
