@@ -176,9 +176,9 @@ SIMPLE_JWT = {
 }
 
 # ─── CORS ─────────────────────────────────────────────────────────────────────
-# In production, set CORS_ORIGINS env var to your Vercel URL, e.g.
+# Set CORS_ORIGINS to your Vercel production URL, e.g.
 # CORS_ORIGINS=https://your-app.vercel.app
-# Railway auto-sets PORT and DATABASE_URL when you add a Postgres plugin
+# For Vercel preview URLs, we use CORS_ALLOWED_ORIGIN_REGEXES
 _extra_origins = [
     o.strip()
     for o in os.getenv('CORS_ORIGINS', '').split(',')
@@ -189,6 +189,12 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5174',
     'http://localhost:3000',
 ] + _extra_origins
+
+# Allow all Vercel preview/production URLs
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r'^https://.*\.vercel\.app$',
+]
+
 CORS_ALLOW_CREDENTIALS = True
 
 # ─── Razorpay ─────────────────────────────────────────────────────────────────
